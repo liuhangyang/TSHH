@@ -1,0 +1,69 @@
+//
+// Created by yang on 16-8-16.
+//
+
+#ifndef TSHH_JSONTOMAP_HPP
+#define TSHH_JSONTOMAP_HPP
+
+#include <string>
+#include <unordered_map>
+#include "./jsoncpp-src-0.5.0/include/json/json.h"
+#include <vector>
+#include <set>
+class jsonTomap{
+public:
+    jsonTomap()= default;
+    jsonTomap(std::string str){
+        this->myjson=str;
+    }
+    std::unordered_map<std::string,std::vector<std::string>> getMap(){
+        //std::cout <<myjson<<std::endl;
+        std::string json(myjson);
+        Json::Reader reader;
+        Json::Value value;
+        std::unordered_map<std::string,std::vector<std::string>> content;
+        std::set<std::string> key;
+        while(1){
+            int length=json.size();
+            std::string str="";
+            str=json.substr(json.find("\"")+1,json.find("\":")-json.find("\"")-1);
+            //std::cout <<"str------>"<<str<<std::endl;
+            key.insert(str);
+            int index=json.find("],");
+            if(index==-1){
+                break;
+            }
+            json=json.substr(index+1,length-index);
+        }
+        if(reader.parse(myjson,value)){
+            //std::cout <<"cdcd"<<std::endl;
+            for(auto &s:key) {
+                const Json::Value array0 = value[s];
+                std::vector<std::string> arr;
+                for(int i=0;i<array0.size();i++){
+                    //std::cout << array0[i]<<std::endl;
+                    std::string s=array0[i].asString();
+                    arr.push_back(s);
+                }
+                content[s]=arr;
+
+            }
+        }
+        /*for(auto &s:content){
+            std::cout << s.first<<": ";
+            for(auto &t:s.second){
+                std::cout << t;
+            }
+            std::cout <<std::endl;
+        }*/
+        return  content;
+
+
+    };
+     private:
+    std::string myjson;
+
+};
+
+
+#endif //TSHH_JSONTOMAP_HPP
